@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{user-fragment::header}">
+
+</head>
+
+<body>
+
+<!-- Topbar Start -->
+<div th:replace="~{user-fragment::topbar}"></div>
+<!-- Topbar End -->
+
+
+<!-- Navbar Start -->
+<div th:replace="~{user-fragment::navbar}"></div>
+<!-- Navbar End -->
+
+<main class="main-myuser">
+    <div class="content-page py-3">
+        <div class="container pb-5">
+            <h5 class="home-title text-primary mb-lg-5 font-weight-medium"></h5>
+            <body th:if="${orderSuccess}" onload="orderSuccess();"></body>
+            <div class="row">
+                <div class="col-lg-4 pt-4 pt-lg-0">
+                    <div th:replace="~{user-fragment::sidebar-user}"></div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="d-flex justify-content-between align-items-center pb-4 pb-lg-3 mb-lg-3">
+                        <h3 class="m-0 p-0" style="font-size: 25px; color: #144194">
+                            My Orders
+                        </h3>
+                    </div>
+                    <div class="table-responsive font-size-md">
+                        <table class="table table-hover mb-0 text-center">
+                            <thead class="bg-fill rounded-top">
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Order Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="order : ${orders}">
+                                <td th:text="${order.id}"></td>
+                                <td th:text="${order.orderDate}"></td>
+                                <td th:text="${order.orderStatus}"></td>
+                                <td>
+                                    <a class="btn btn-primary" id="btnCancel" th:if="${order.orderStatus == 'PENDING'}"
+                                       th:onclick="changeStatus([[${order.id}]], 'CANCEL');">Cancel</a>
+                                    <a class="btn btn-primary" th:href="@{/user/order-detail/{id}(id = ${order.id})}">Show Detail</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- end table -->
+                    <hr class="pb-4"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- Footer Start -->
+<div th:replace="~{user-fragment::footer}"></div>
+<!-- Footer End -->
+
+
+<!-- Back to Top -->
+<a th:replace="~{user-fragment::back-to-top}"></a>
+
+<div th:replace="~{user-fragment::script}"></div>
+
+<script th:inline="javascript">
+    function orderSuccess() {
+        swal({
+            title: "Order!",
+            text: "Order success!",
+            icon: "success",
+            button: "Close!",
+        });
+    }
+    function changeStatus(orderId, status) {
+        $.ajax({
+            url: `http://localhost:8019/user/order/${orderId}?status=${status}`,
+            type: 'POST',
+            contentType: 'application/json',
+            success: function (result) {
+                swal({
+                    title: "Success!",
+                    text: "Cancel successfully order!",
+                    icon: "success",
+                    button: "Close!",
+                }).then((value) => {
+                    window.location.href = "http://localhost:8019/account/order-history";
+                });
+            },
+            error: function (error) {
+                swal({
+                    title: "Error!",
+                    text: "The server has been errors!",
+                    icon: "error",
+                });
+            }
+        });
+    }
+</script>
+</body>
+
+</html>

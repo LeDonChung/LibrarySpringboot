@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin-fragment::header}">
+</head>
+  <body>
+    <div class="container-scroller">
+
+      <!-- partial:partials/_navbar.html -->
+      <nav th:replace="~{admin-fragment::navbar}">
+      </nav>
+      <!-- partial -->
+
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        <nav th:replace="~{admin-fragment::sidebar}">
+        </nav>
+        <!-- partial -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <div class="page-header">
+              <h3 class="page-title"> Quản lý sách </h3>
+            </div>
+            <div class="row">
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div th:if="${fail}" class="alert alert-warning text-center" th:text="${fail}">
+
+                    </div>
+                    <div th:if="${success}" class="alert alert-warning text-center" th:text="${success}">
+
+                    </div>
+                    <div class="col-12 grid-margin stretch-card">
+                      <div class="card">
+                        <div class="card-body">
+                          <h4 class="card-title text-center">Sách</h4>
+                          <form th:action="@{/admin/books/add}" id="formSubmit" method="post" class="forms-sample"
+                                enctype="multipart/form-data"th:object="${book}">
+                            <div class="row">
+                              <div class="col-lg-6">
+                                <div class="row">
+                                  <div class="col-lg-6">
+                                    <div class="form-group">
+                                      <label for="inputTitle">Tiêu đề</label>
+                                      <input type="text" class="form-control" th:field="*{title}" id="inputTitle" placeholder="Tiêu đề" required>
+                                      <p class="alert alert-danger form-message" style="display: none;"></p>
+                                    </div>
+                                  </div>
+                                  <div class="col-lg-6">
+                                    <div class="form-group">
+                                      <label for="inputAuthor">Tác giả</label>
+                                      <input type="text" class="form-control" th:field="*{author}" id="inputAuthor" placeholder="Tác giả" required>
+                                      <p class="alert alert-danger form-message" style="display: none;"></p>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div class="form-group">
+                                  <label for="inputDescription">Mô tả về sách</label>
+                                  <textarea class="form-control" th:field="*{description}" id="inputDescription" rows="8"></textarea>
+                                </div>
+                                <div class="row">
+                                  <div class="col-lg-6">
+                                    <div class="form-group">
+                                      <label for="releaseDate">Ngày phát hành</label>
+                                      <input type="date" th:value="*{releaseDate}" name="releaseDate" class="form-control" id="releaseDate" placeholder="Ngày phát hành" required>
+                                      <p class="alert alert-danger form-message" style="display: none;"></p>
+                                    </div>
+                                  </div>
+                                  <div class="col-lg-6">
+                                    <div class="form-group">
+                                      <label for="numberOfPage">Số trang</label>
+                                      <input type="number" class="form-control" th:field="*{numberOfPage}" id="numberOfPage" placeholder="Số trang">
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-lg-6">
+                                    <div class="form-group">
+                                      <label for="categories">Thể loại</label>
+                                      <select id="categories" th:field="*{category}"
+                                              name="categories" class="form-control">
+                                        <option th:value="null">-Select-</option>
+                                        <option th:each="categoryChoose : ${categories}"
+                                                th:value="${categoryChoose.id}"
+                                                th:text="${categoryChoose.categoryName}"></option>
+                                      </select>
+                                  </div>
+                                </div>
+                              </div>
+
+                            </div>
+                              <div class="col lg-6">
+                                <div class="row">
+                                  <div class="col-lg-12">
+                                    <!-- File Button -->
+                                    <div class="form-group">
+                                      <input type="file" id="inp" name="bookCoverUpload" class="file-upload-default">
+                                      <div class="input-group col-xs-12" style="display: flex; align-items: center; justify-content: center;">
+                                        <input type="hidden" class="form-control file-upload-info" disabled placeholder="Upload Image">
+                                        <span class="input-group-append">
+                                          <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="col-lg-12" style="display: flex; align-items: center; justify-content: center;">
+                                    <img th:src="@{'data:image/jpeg;base64,' + ${book.bookCover}}" id="bookCoverView" style="height: 300px; width: 300px;">
+                                  </div>
+                                </div>
+                              </div>
+                              <div style="display: flex; align-items: center; justify-content: end;">
+                                <body th:if="${editBook}" onload="showDetails()"></body>
+                                <button type="submit" th:if="${editBook}" id="btnEdit"  class="btn btn-gradient-primary me-2">Edit</button>
+                                <button type="submit" th:if="${addBook}" id="btnAdd"  class="btn btn-gradient-primary me-2">Add</button>
+                                <button type="submit" style="display: none;" id="btnSave" class="btn btn-gradient-primary me-2">Save</button>
+                              </div>
+                            </div>
+
+                            <input name="id" type="hidden" th:if="${editBook}" th:value="${book.id}"/>
+
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- content-wrapper ends -->
+        </div>
+
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+
+    <head th:replace="~{admin-fragment::script}">
+    </head>
+    <script>
+
+        let titleElement = $('#inputTitle');
+        let authorElement = $('#inputAuthor');
+        let descriptionElement = $('#inputDescription');
+        let releaseDateElement = $('#releaseDate');
+        let numberOfPageElement = $('#numberOfPage');
+        let categoryElement = $('#categories');
+
+        function changeStatus(status) {
+          if(status === 1) {
+            authorElement.removeAttr('disabled');
+            titleElement.removeAttr('disabled');
+            descriptionElement.removeAttr('disabled');
+            releaseDateElement.removeAttr('disabled');
+            numberOfPageElement.removeAttr('disabled');
+            categoryElement.removeAttr('disabled');
+          } else {
+            authorElement.attr('disabled','disabled');
+            titleElement.attr('disabled','disabled');
+            descriptionElement.attr('disabled','disabled');
+            releaseDateElement.attr('disabled','disabled');
+            categoryElement.attr('disabled','disabled');
+            numberOfPageElement.attr('disabled','disabled');
+          }
+        }
+
+
+        $('#btnAdd').on('click', function(e) {
+          e.preventDefault();
+
+          let status = checkValid(titleElement, 'Title is not empty') && checkValid(authorElement, 'Author is not empty') && checkValid(releaseDateElement, 'Release date is not empty')
+          if(status == false) {
+            return false;
+          }
+            swal({
+                title: "Xác nhận?",
+                text: "Bạn có muốn thêm sách!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    $('#formSubmit').attr('action', '/admin/books/add');
+                    $('#formSubmit').submit();
+                }
+            });
+        });
+ 
+        function showDetails() {
+          changeStatus(0);
+          $('#btnSave').hide();
+          $('#btnEdit').show();
+        }
+
+        $('#btnEdit').on('click', function(e) {
+          e.preventDefault();
+          changeStatus(1);
+          $('#btnEdit').hide();
+          $('#btnSave').show();
+        });
+
+        $('#btnSave').on('click', function(e){
+          e.preventDefault();
+          if(!checkValid(titleElement, 'Title is not empty')
+                  || !checkValid(authorElement, 'Author is not empty')
+                  || !checkValid(releaseDateElement, 'Release date is not empty')) {
+            return false;
+          }
+          swal({
+            title: "Xác nhận?",
+            text: "Bạn có muốn sửa sách!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+          }).then((willDelete) => {
+            if (willDelete) {
+              $('#formSubmit').attr('action', '/admin/books/update');
+              $('#formSubmit').submit();
+            }
+          });
+          return  true;
+        })
+
+
+        function checkValid(element, message) {
+          let value = element.val();
+          let formMessage =  element.parent('.form-group').children('.form-message');
+          if(value.length <= 0) {
+            formMessage.show();
+            formMessage.text(message);
+            return false;
+          }
+          formMessage.hide();
+          return true;
+        }
+
+        function readFile() {
+
+          if (!this.files || !this.files[0]) return;
+
+          const FR = new FileReader();
+
+          FR.addEventListener("load", function(evt) {
+            document.querySelector("#bookCoverView").src         = evt.target.result;
+            document.querySelector("#b64").textContent = evt.target.result;
+          });
+
+          FR.readAsDataURL(this.files[0]);
+
+        }
+
+        document.querySelector("#inp").addEventListener("change", readFile);
+
+    </script>
+  </body>
+</html>

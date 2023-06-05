@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{user-fragment::header}">
+
+</head>
+
+<body>
+<!-- Topbar Start -->
+<div th:replace="~{user-fragment::topbar}"></div>
+<!-- Topbar End -->
+
+
+<!-- Navbar Start -->
+<div th:replace="~{user-fragment::navbar}"></div>
+<!-- Navbar End -->
+
+<section class="h-100 gradient-custom">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-lg-10 col-xl-8">
+                <div class="card" style="border-radius: 10px;">
+                    <div class="card-header px-4 py-5">
+                        <h5 class="text-muted mb-0">Thanks for your Order, <span style="color: #a8729a;" th:text="${userLogin.fullName}"></span>!</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <p class="lead fw-normal mb-0" style="color: #a8729a;">Receipt</p>
+                            <button class="btn btn-primary" th:text="${order.orderStatus}"></button>
+                        </div>
+
+                        <div class="card shadow-0 border mb-4" th:each="item : ${order.orderDetails}">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <img th:src="@{'data:image/jpeg;base64,' + ${item.book.bookCover}}"
+                                             class="img-fluid" alt="Book cover">
+                                    </div>
+                                    <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                                        <p class="text-muted mb-0" th:text="${item.book.title}"></p>
+                                    </div>
+                                    <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                                        <p class="text-muted mb-0 small" th:text="${item.book.author}"></p>
+                                    </div>
+                                    <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                                        <p class="text-muted mb-0 small" th:text="${item.book.category.categoryName}"></p>
+                                    </div>
+                                    <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                                        <p class="text-muted mb-0 small" th:text="'Qty: ' + ${item.quantity}"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between pt-2">
+                            <p class="fw-bold mb-0">Order Details</p>
+                        </div>
+
+                        <div class="d-flex justify-content-between pt-2">
+                            <p class="text-muted mb-0">OrderID : [[${order.id}]]</p>
+                        </div>
+
+                        <div class="d-flex justify-content-between pt-2">
+                            <p class="text-muted mb-0">Customer : [[${order.user.fullName}]]</p>
+                        </div>
+
+                        <div class="d-flex justify-content-between pt-2">
+                            <p class="text-muted mb-0">Phone number : [[${order.phoneNumber}]]</p>
+                        </div>
+
+                        <div class="d-flex justify-content-between pt-2">
+                            <p class="text-muted mb-0">Address : [[${order.address}]]</p>
+                        </div>
+
+                        <div class="d-flex justify-content-between pt-2">
+                            <p class="text-muted mb-0">Order Date : [[${order.orderDate}]]</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer Start -->
+<div th:replace="~{user-fragment::footer}"></div>
+<!-- Footer End -->
+
+
+<!-- Back to Top -->
+<a th:replace="~{user-fragment::back-to-top}"></a>
+
+<div th:replace="~{user-fragment::script}"></div>
+</body>
+
+</html>

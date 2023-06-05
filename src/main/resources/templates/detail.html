@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{user-fragment::header}">
+</head>
+<body>
+
+<!-- Topbar Start -->
+<div th:replace="~{user-fragment::topbar}"></div>
+<!-- Topbar End -->
+
+
+<!-- Navbar Start -->
+<div th:replace="~{user-fragment::navbar}"></div>
+<!-- Navbar End -->
+
+<!-- Shop Detail Start -->
+<div class="container-fluid pb-5">
+  <div class="row px-xl-5">
+    <div class="col-lg-5 mb-30">
+      <div id="product-carousel" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner bg-light">
+          <div class="carousel-item active">
+            <img class="w-100 h-100" th:src="@{'data:image/jpeg;base64,' + ${book.bookCover}}" alt="Book cover" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <body th:if="${success}" onload="addToCartSuccess()"></body>
+    <body th:if="${fail}" onload="addToCartFail()"></body>
+    <body th:if="${commentSuccess}" onload="commentSuccess()"></body>
+    <body th:if="${commentFail}" onload="commentFail()"></body>
+    <div class="col-lg-7 h-auto mb-30">
+        <form th:action="@{/user/add-to-cart/{id}(id = ${book.id})}" method="post">
+        <div class="h-100 bg-light p-30">
+          <h3 th:text="${book.title}"></h3>
+          <h6 th:text="'by:' + ${book.author}"> </h6>
+          <div class="d-flex mb-3">
+            <small class="pt-1" th:text="'(' + ${book.comments.size()} + ' Reviews)'"></small>
+          </div>
+          <p class="mb-4" th:text="${book.description}">
+
+          </p>
+          <div class="d-flex align-items-center mb-4 pt-2">
+            <div class="input-group quantity mr-3" style="width: 130px;">
+              <div class="input-group-btn">
+                <button type="button" class="btn btn-primary btn-minus">
+                  <i class="fa fa-minus"></i>
+                </button>
+              </div>
+              <input type="text" name="quantity" id="quantity"
+                     class="form-control bg-secondary border-0 text-center" value="1"/>
+              <div class="input-group-btn">
+                <button type="button" class="btn btn-primary btn-plus">
+                  <i class="fa fa-plus"></i>
+                </button>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary px-3">
+              <i class="fa fa-shopping-cart mr-1"></i> Add To Cart
+            </button>
+          </div>
+        </div>
+        </form>
+      </div>
+  </div>
+  <div class="row px-xl-5">
+    <div class="col">
+      <div class="bg-light p-30">
+        <div class="nav nav-tabs mb-4">
+          <a class="nav-item nav-link text-dark active" data-toggle="tab" href="#tab-pane-1">Description</a>
+          <a class="nav-item nav-link text-dark" data-toggle="tab" href="#tab-pane-2">Reviews ([[${book.comments.size()}]])</a>
+        </div>
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="tab-pane-1">
+            <h4 class="mb-3">Product Description</h4>
+            <p>
+            <div class="d-flex">
+              <blockquote>
+                <div class="title"><strong>Title: </strong></div>
+                <div class="title" th:text="${book.title}"></div>
+                <div class="title">&nbsp;</div>
+                <div class="title"><strong>Author: </strong></div>
+                <div class="title" th:text="${book.author}"></div>
+                <div class="title">&nbsp;</div>
+                <div class="title"><strong>Category: </strong></div>
+                <div class="title" th:text="${book.category.categoryName}"></div>
+                <div class="title">&nbsp;</div>
+                <div class="title"><strong>Number of page</strong></div>
+                <div class="title" th:text="${book.title} + 'pages'"></div>
+                <div class="title">&nbsp;</div>
+                <div class="title"><strong>Release date</strong></div>
+                <div class="title" th:text="${book.releaseDate}"></div>
+                <div class="title">&nbsp;</div>
+                <div class="title"><strong>Description</strong></div>
+                <div class="title" th:text="${book.description}"></div>
+              </blockquote>
+            </div>
+            </p>
+          </div>
+
+          <div class="tab-pane fade" id="tab-pane-2">
+            <div class="row">
+              <div class="col-md-6">
+                <h4 class="mb-4" th:text="${book.comments.size()} + ' review for' + ${book.title}"></h4>
+                <div class="media mb-4" th:each="comment : ${book.comments}">
+                  <img th:src="@{/images/faces/face1.jpg}" alt="Image" class="img-fluid mr-3 mt-1" style="width: 45px" />
+                  <div class="media-body">
+                    <h6>
+                      [[${comment.user.fullName}]]<small> - <i>[[${comment.commentDate}]]</i></small>
+                    </h6>
+                    <div class="text-primary mb-2">
+                      <i th:each="i : ${#numbers.sequence(1, 5)}" class="fa-star" th:classappend="${i <= comment.stars ? 'fas' : 'far'}"></i>
+                    </div>
+                    <p th:text="${comment.content}">
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <h4 class="mb-4">Leave a review</h4>
+                <form th:action="@{/user/book/{id}/comment(id = ${book.id})}", method="post">
+                <div class="d-flex my-3">
+                  <p class="mb-0 mr-2">Your Rating * :</p>
+                  <div class="text-primary">
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="stars" id="inlineRadio1" value="1" />
+                      <label class="form-check-label" for="inlineRadio1">1</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="stars" id="inlineRadio2" value="2" />
+                      <label class="form-check-label" for="inlineRadio2">2</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="stars" id="inlineRadio4" value="3" />
+                      <label class="form-check-label" for="inlineRadio4">3</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="stars" id="inlineRadio5" value="4" />
+                      <label class="form-check-label" for="inlineRadio5">4</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="stars" id="inlineRadio6" value="5" />
+                      <label class="form-check-label" for="inlineRadio6">5</label>
+                    </div>
+                  </div>
+                </div>
+                  <div class="form-group">
+                    <label for="content">Your Review *</label>
+                    <textarea id="content" name="content" cols="30" rows="5" class="form-control"></textarea>
+                  </div>
+                  <div class="form-group mb-0">
+                    <input type="submit" value="Comment" class="btn btn-primary px-3" />
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Shop Detail End -->
+
+<!-- Footer Start -->
+<div th:replace="~{user-fragment::footer}"></div>
+<!-- Footer End -->
+
+
+<!-- Back to Top -->
+<a th:replace="~{user-fragment::back-to-top}"></a>
+
+<div th:replace="~{user-fragment::script}"></div>
+</body>
+<script>
+  function addToCartSuccess() {
+    swal({
+      title: "Cart!",
+      text: "Add item to cart successfully!",
+      icon: "success",
+      button: "Close!",
+    });
+  }
+
+  function commentSuccess() {
+    swal({
+      title: "Comment!",
+      text: "Comment success!",
+      icon: "success",
+      button: "Close!",
+    });
+  }
+
+  function addToCartFail() {
+    swal({
+      title: "Cart!",
+      text: "Add to cart fail!",
+      icon: "error",
+      button: "Close!",
+    });
+  }
+
+  function commentFail() {
+    swal({
+      title: "Cart!",
+      text: "Comment fail!",
+      icon: "error",
+      button: "Close!",
+    });
+  }
+</script>
+</html>

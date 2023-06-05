@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments::header}">
+
+</head>
+
+<body>
+<div class="container-scroller">
+    <!-- partial:partials/_navbar.html -->
+    <nav th:replace="~{fragments::navbar}">
+    </nav>
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        <nav th:replace="~{fragments::sidebar}">
+        </nav>
+        <!-- partial -->
+        <div class="main-panel">
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h3 class="page-title"> Store Manager </h3>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Purschasing Product</h4>
+
+                                <div th:if="${success}" class="alert alert-warning text-center" th:text="${success}">
+                                </div>
+
+                                <div th:if="${error}" class="alert alert-warning text-center" th:text="${error}">
+                                </div>
+
+                                <form class="form-sample" th:action="@{/add-store}" method="post" th:object="${store}">
+                                    <div class="row">
+                                        <!-- Select product -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label" for="products">Choose Product</label>
+                                                <select th:field="*{product}" id="products" name="products" class="form-control">
+                                                    <option th:value="null">-Select product-</option>
+                                                    <option th:value="${productChoose.id}"
+                                                            th:text="${productChoose.productName}"
+                                                            th:each="productChoose : ${products}">
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <!-- Select product -->
+                                        <!-- Select Storage -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label" for="storages">Choose storage</label>
+                                                <select th:field="*{storage}" id="storages" name="storages" class="form-control">
+                                                    <option th:value="null">-Select storage-</option>
+                                                    <option th:value="${storageChoose.id}"
+                                                            th:text="${storageChoose.name}"
+                                                            th:each="storageChoose : ${storages}">
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <!-- Select Storage -->
+                                    </div>
+                                    <div class="row">
+                                        <!-- Select color -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label" for="colors">Choose Color</label>
+                                                <select th:field="*{color}" id="colors" name="colors" class="form-control">
+                                                    <option th:value="null">-Select color-</option>
+                                                    <option th:value="${colorChoose.id}"
+                                                            th:text="${colorChoose.name}"
+                                                            th:each="colorChoose : ${colors}">
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <!-- Select color -->
+                                        <!-- Input quantity -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label" for="quantity">Quantity</label>
+                                                <input type="number" th:field="*{quantity}" id="quantity" class="form-control">
+                                            </div>
+                                        </div>
+                                        <!-- Input quantity -->
+                                    </div>
+                                    <div class="row">
+                                        <!-- Input cost price -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label" for="costPrice">Cost Price</label>
+                                                <input type="number" th:field="*{costPrice}" id="costPrice" class="form-control">
+                                            </div>
+                                        </div>
+                                        <!-- Input cost price -->
+                                        <!-- Input sale price -->
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="control-label" for="salePrice">Sale Price</label>
+                                                <input type="number" th:field="*{salePrice}" id="salePrice" class="form-control">
+                                            </div>
+                                        </div>
+                                        <!-- Input sale price-->
+                                    </div>
+                                    <div class="row">
+
+                                        <div class="col-md-12">
+                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                        </div>
+
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Stores</h4>
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th> ID </th>
+                                        <th> Product </th>
+                                        <th> Cost Price </th>
+                                        <th> Sale price </th>
+                                        <th> Quantity </th>
+                                        <th> Storage </th>
+                                        <th> Color </th>
+                                        <th> Action </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="store : ${stores}">
+                                        <td th:text="${store.id}"></td>
+                                        <td th:text="${store.product.productName}"></td>
+                                        <td th:text="${store.costPrice}"></td>
+                                        <td th:text="${store.salePrice}"></td>
+                                        <td th:text="${store.quantity}"></td>
+                                        <td th:text="${store.storage.name}"></td>
+                                        <td th:text="${store.color.name}"></td>
+                                        <td>
+                                            <button class="btn btn-warning" type="button" th:onclick="removeStore([[${store.id}]])">Delete</button>
+                                            <a class="btn btn-primary" id="btnUpdateStore" th:href="@{/stores/findById(id = ${store.id})}">Update</a>
+                                            <div class="modal fade" id="updateStore" tabindex="-1"
+                                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <form th:action="@{/update-store/{id}(id = ${store.id})}" method="get" class="forms-sample">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="titleUpdate">Update product</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="form-group">
+                                                                    <label for="idEdit">ID</label>
+                                                                    <input type="text" class="form-control"
+                                                                           id="idEdit" name="id" placeholder="ID" disabled>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="costEdit">Cost price</label>
+                                                                    <input type="text" class="form-control"
+                                                                           id="costEdit" name="costPrice" placeholder="Cost price">
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="saleEdit">Sale price</label>
+                                                                    <input type="text" class="form-control"
+                                                                           id="saleEdit" name="salePrice" placeholder="Sale price">
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="quantityEdit">Quantity</label>
+                                                                    <input type="text" class="form-control"
+                                                                           id="quantityEdit" name="quantity" placeholder="Quantity">
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                        data-bs-dismiss="modal">Close
+                                                                </button>
+                                                                <button type="submit" class="btn btn-primary">Save changes
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- content-wrapper ends -->
+            <!-- partial:../../partials/_footer.html -->
+            <footer class="footer">
+                <div class="container-fluid d-flex justify-content-between">
+            <span class="text-muted d-block text-center text-sm-start d-sm-inline-block">Copyright © bootstrapdash.com
+              2021</span>
+                    <span class="float-none float-sm-end mt-1 mt-sm-0 text-end"> Free <a
+                            href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin
+                template</a> from Bootstrapdash.com</span>
+                </div>
+            </footer>
+            <!-- partial -->
+        </div>
+        <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+</div>
+
+
+<!-- container-scroller -->
+<head th:replace="~{fragments::script}">
+</head>
+<script th:inline="javascript">
+        $('#btnUpdateStore').on('click', function(e) {
+            e.preventDefault();
+            let href = $(this).attr("href");
+            $.get(href, function(store, status) {
+                $('#idEdit').val(store.id);
+                $('#costEdit').val(store.costPrice);
+                $('#saleEdit').val(store.salePrice);
+                $('#quantityEdit').val(store.quantity);
+            });
+            $('#updateStore').modal('show');
+        });
+
+        function removeStore(storeId) {
+            $.ajax({
+                url: `http://localhost:8019/admin/stores/${storeId}`,
+                type: 'DELETE',
+                contentType: 'application/json',
+                success: function (result) {
+                    swal({
+                        title: "Success!",
+                        text: "Delete success store!",
+                        icon: "success",
+                        button: "Close!",
+                    }).then((value) => {
+                        window.location.href = "../static/admin/stores";
+                    });
+
+                },
+                error: function (error) {
+                    swal({
+                        title: "Error!",
+                        text: "The server has been errors!",
+                        icon: "error",
+                    });
+                }
+            });
+        }
+</script>
+</body>
+</html>
